@@ -17,6 +17,20 @@ export class MechanicRepository {
     });
   }
 
+  async findAllPaginated(page: number, limit: number): Promise<{ data: Mechanic[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.repository.findAndCount({
+      order: {
+        createdAt: 'DESC',
+      },
+      skip,
+      take: limit,
+    });
+
+    return { data, total };
+  }
+
   async findById(id: string): Promise<Mechanic | null> {
     return this.repository.findOne({
       where: { id },

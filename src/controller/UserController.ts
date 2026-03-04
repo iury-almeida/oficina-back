@@ -54,8 +54,12 @@ export class UserController {
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const users = await this.service.getAll();
-      res.json(users);
+      const { page = '1', limit = '10' } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const result = await this.service.getAll(pageNumber, limitNumber);
+      res.json(result);
     } catch (error) {
       res.status(500).json({
         message: 'Error fetching users',

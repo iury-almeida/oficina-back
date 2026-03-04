@@ -17,8 +17,22 @@ export class ServiceOrderService {
     this.mechanicRepository = new MechanicRepository();
   }
 
-  public async getAll(): Promise<ServiceOrder[]> {
-    return this.repository.findAll();
+  public async getAll(page: number, limit: number): Promise<{
+    data: ServiceOrder[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { data, total } = await this.repository.findAllPaginated(page, limit);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   public async getById(id: string): Promise<ServiceOrder | null> {

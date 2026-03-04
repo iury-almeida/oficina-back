@@ -8,8 +8,22 @@ export class MechanicService {
     this.repository = new MechanicRepository();
   }
 
-  public async getAll(): Promise<Mechanic[]> {
-    return this.repository.findAll();
+  public async getAll(page: number, limit: number): Promise<{
+    data: Mechanic[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { data, total } = await this.repository.findAllPaginated(page, limit);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   public async getById(id: string): Promise<Mechanic | null> {

@@ -38,6 +38,18 @@ export class UserRepository {
     });
   }
 
+  async findAllPaginated(page: number, limit: number): Promise<{ data: User[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.repository.findAndCount({
+      select: ['id', 'cpf', 'name', 'telephone', 'endereco', 'cep', 'adm', 'active', 'createdAt', 'updatedAt'],
+      skip,
+      take: limit
+    });
+
+    return { data, total };
+  }
+
   async findById(id: string): Promise<User | null> {
     return this.repository.findOne({
       where: { id },

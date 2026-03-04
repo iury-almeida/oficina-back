@@ -10,11 +10,15 @@ export class ClientController {
 
   public async getAll(req: any, res: Response): Promise<Response> {
     try {
-      const clients = await this.service.getAll();
+      const { page = '1', limit = '10' } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const clients = await this.service.getAll(pageNumber, limitNumber);
       return res.status(200).json({
         message: 'Clients retrieved successfully',
         status: 200,
-        data: clients,
+        ...clients,
       });
     } catch (error) {
       console.error('Error fetching clients:', error);

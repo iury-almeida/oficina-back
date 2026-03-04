@@ -10,11 +10,15 @@ export class MechanicController {
 
   public async getAll(req: any, res: Response): Promise<Response> {
     try {
-      const mechanics = await this.service.getAll();
+      const { page = '1', limit = '10' } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const mechanics = await this.service.getAll(pageNumber, limitNumber);
       return res.status(200).json({
         message: 'Mechanics retrieved successfully',
         status: 200,
-        data: mechanics,
+        ...mechanics,
       });
     } catch (error) {
       console.error('Error fetching mechanics:', error);

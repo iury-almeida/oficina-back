@@ -18,6 +18,21 @@ export class ServiceOrderRepository {
     });
   }
 
+  async findAllPaginated(page: number, limit: number): Promise<{ data: ServiceOrder[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.repository.findAndCount({
+      relations: ['client', 'motorcycle', 'mechanic'],
+      order: {
+        createdAt: 'DESC',
+      },
+      skip,
+      take: limit,
+    });
+
+    return { data, total };
+  }
+
   async findById(id: string): Promise<ServiceOrder | null> {
     return this.repository.findOne({
       where: { id },

@@ -8,8 +8,22 @@ export class ClientService {
     this.repository = new ClientRepository();
   }
 
-  public async getAll(): Promise<Client[]> {
-    return this.repository.findAll();
+  public async getAll(page: number, limit: number): Promise<{
+    data: Client[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { data, total } = await this.repository.findAllPaginated(page, limit);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   public async getById(id: string): Promise<Client | null> {

@@ -57,8 +57,22 @@ export class UserService {
     };
   }
 
-  async getAll(): Promise<User[]> {
-    return this.repository.findAll();
+  async getAll(page: number, limit: number): Promise<{
+    data: User[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { data, total } = await this.repository.findAllPaginated(page, limit);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   async getById(id: string): Promise<User | null> {
