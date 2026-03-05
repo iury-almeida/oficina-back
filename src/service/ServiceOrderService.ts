@@ -3,6 +3,7 @@ import { ServiceOrderRepository } from '../repository/ServiceOrderRepository';
 import { ClientRepository } from '../repository/ClientRepository';
 import { MotorcycleRepository } from '../../src/repository/MotorcycleRepository';
 import { MechanicRepository } from '../repository/MechanicRepository';
+import { saveBase64ToFile } from '../helpers/imgToText';
 
 export class ServiceOrderService {
   private repository: ServiceOrderRepository;
@@ -75,7 +76,7 @@ export class ServiceOrderService {
     return this.repository.create(serviceOrderData);
   }
 
-  public async update(id: string, data: Partial<ServiceOrder>): Promise<ServiceOrder | null> {
+  public async update(id: string, data: Partial<ServiceOrder>, photoBase64: string | null): Promise<ServiceOrder | null> {
     if (!id) {
       throw new Error('Service order ID is required');
     }
@@ -105,6 +106,11 @@ export class ServiceOrderService {
       if (!mechanic) {
         throw new Error('Mechanic not found');
       }
+    }
+
+    if (photoBase64) {
+      const imagePath = await saveBase64ToFile(photoBase64 || '', process.env.RECIBO_IMG_PATH);
+      data.imagePath = imagePath;
     }
 
     return this.repository.update(id, data);

@@ -111,11 +111,19 @@ export class ServiceOrderController {
   public async update(req: any, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
+      const photoBase64 = req.body.photoBase64 || null; 
       const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost } = req.body;
 
       if (!id) {
         return res.status(400).json({
           message: 'Service order ID is required',
+          status: 400,
+        });
+      }
+
+      if (status === 'Concluído' && (photoBase64 === undefined || photoBase64 === null)) {
+        return res.status(400).json({
+          message: 'Photo is required when status is Concluído',
           status: 400,
         });
       }
@@ -135,7 +143,7 @@ export class ServiceOrderController {
         updateData.laborCost = Number(laborCost);
       }
 
-      const updatedServiceOrder = await this.service.update(id, updateData);
+      const updatedServiceOrder = await this.service.update(id, updateData, photoBase64);
       return res.status(200).json({
         message: 'Service order updated successfully',
         status: 200,

@@ -35,6 +35,9 @@ export class ServiceOrder {
   @Column({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
   laborCost?: number;
 
+  @Column({ nullable: true })
+  imagePath?: string;
+
   @CreateDateColumn()
   createdAt!: Date;
 
