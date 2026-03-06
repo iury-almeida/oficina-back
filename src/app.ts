@@ -8,7 +8,9 @@ export function createApp(): Application {
 
   // CORS configuration
   app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    // origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    // origin: 'https://7910-2804-1e68-8006-854e-8532-78ca-c61b-4b78.ngrok-free.app',
+    origin: '*', 
     credentials: true,
   }));
 
