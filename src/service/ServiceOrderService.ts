@@ -36,6 +36,44 @@ export class ServiceOrderService {
     };
   }
 
+  // private static readonly DEFAULT_STATUS_FILTERS = ['aguardando', 'iniciado', 'concluído'];
+  // private static readonly STATUS_MAP: Record<string, string> = {
+  //   aguardando: 'Aguardando',
+  //   iniciado: 'Iniciado',
+  //   concluido: 'Concluído',
+  //   'concluído': 'Concluído',
+  // };
+
+  // public async getFilteredList(
+  //   page: number,
+  //   limit: number,
+  //   statusParam?: string
+  // ): Promise<{
+  //   data: ServiceOrder[];
+  //   total: number;
+  //   page: number;
+  //   limit: number;
+  //   totalPages: number;
+  // }> {
+  //   const statusFilters = statusParam
+  //     ? statusParam.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
+  //     : ServiceOrderService.DEFAULT_STATUS_FILTERS;
+
+  //   const dbPatterns = statusFilters.map(
+  //     (s) => ServiceOrderService.STATUS_MAP[s] || s.charAt(0).toUpperCase() + s.slice(1)
+  //   );
+
+  //   const { data, total } = await this.repository.findPaginatedFiltered(page, limit, dbPatterns);
+
+  //   return {
+  //     data,
+  //     total,
+  //     page,
+  //     limit,
+  //     totalPages: Math.ceil(total / limit),
+  //   };
+  // }
+
   public async getById(id: string): Promise<ServiceOrder | null> {
     if (!id) {
       throw new Error('Service order ID is required');

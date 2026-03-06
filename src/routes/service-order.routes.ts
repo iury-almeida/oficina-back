@@ -7,6 +7,7 @@ const controller = new ServiceOrderController();
 
 // Rotas protegidas (com verificação JWT)
 serviceOrderRouter.get('/', verifyJWT, (req, res) => controller.getAll(req, res));
+// serviceOrderRouter.get('/list', verifyJWT, (req, res) => controller.getFilteredList(req, res));
 serviceOrderRouter.get('/:id', verifyJWT, (req, res) => controller.getById(req, res));
 serviceOrderRouter.post('/', verifyJWT, (req, res) => controller.create(req, res));
 serviceOrderRouter.put('/:id', verifyJWT, (req, res) => controller.update(req, res));

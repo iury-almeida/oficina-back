@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { dataSource } from '../../config/database/data-source';
 import { ServiceOrder } from '../entity/ServiceOrder';
 
@@ -32,6 +32,24 @@ export class ServiceOrderRepository {
 
     return { data, total };
   }
+
+  // async findPaginatedFiltered(
+  //   page: number,
+  //   limit: number,
+  //   statusFilters: string[]
+  // ): Promise<{ data: ServiceOrder[]; total: number }> {
+  //   const skip = (page - 1) * limit;
+
+  //   const [data, total] = await this.repository.findAndCount({
+  //     where: statusFilters.length > 0 ? { status: In(statusFilters) } : {},
+  //     relations: ['client', 'motorcycle', 'mechanic'],
+  //     order: { createdAt: 'ASC' },
+  //     skip,
+  //     take: limit,
+  //   });
+
+  //   return { data, total };
+  // }
 
   async findById(id: string): Promise<ServiceOrder | null> {
     return this.repository.findOne({

@@ -30,6 +30,33 @@ export class ServiceOrderController {
     }
   }
 
+  // public async getFilteredList(req: any, res: Response): Promise<Response> {
+  //   try {
+  //     const { page = '1', limit = '10', status } = req.query;
+  //     const pageNumber = parseInt(page as string, 10) || 1;
+  //     const limitNumber = parseInt(limit as string, 10) || 10;
+  //     const statusParam = Array.isArray(status)
+  //       ? (status as string[]).join(',')
+  //       : typeof status === 'string'
+  //         ? status
+  //         : undefined;
+
+  //     const result = await this.service.getFilteredList(pageNumber, limitNumber, statusParam);
+  //     return res.status(200).json({
+  //       message: 'Service orders retrieved successfully',
+  //       status: 200,
+  //       ...result,
+  //     });
+  //   } catch (error) {
+  //     console.error('Error fetching filtered service orders:', error);
+  //     return res.status(500).json({
+  //       message: 'Internal server error',
+  //       status: 500,
+  //       error: error instanceof Error ? error.message : 'Unknown error',
+  //     });
+  //   }
+  // }
+
   public async getById(req: any, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
