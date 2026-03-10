@@ -12,7 +12,8 @@ export class Client {
   @Column({ nullable: false })
   telephone!: string;
 
-  @Column({ nullable: true, unique: true })
+  /** CPF (11 dígitos) ou CNPJ (14 dígitos). Armazenado sem pontuação. */
+  @Column({ name: 'cpf', nullable: true, unique: true })
   cpf?: string;
 
   @Column({ nullable: true })
