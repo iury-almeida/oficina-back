@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { dataSource } from '../../config/database/data-source';
 import { Client } from '../entity/Client';
 import { Motorcycle } from '../entity/Motorcycle';
@@ -101,8 +101,21 @@ export class ClientRepository {
 
   async findByName(name: string): Promise<Client[]> {
     return this.repository.find({
-      where: { name: `%${name}%` },
+      where: { name: Like(`%${name}%`) },
       relations: ['motorcycles'],
+    });
+  }
+
+  async findForDropdown(name: string | undefined, limit: number): Promise<Client[]> {
+    const where = name
+      ? { name: Like(`%${name}%`) }
+      : {};
+
+    return this.repository.find({
+      where,
+      select: ['id', 'name', 'createdAt'],
+      order: { createdAt: 'DESC' },
+      take: limit,
     });
   }
 }

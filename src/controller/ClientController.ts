@@ -29,6 +29,30 @@ export class ClientController {
     }
   }
 
+  public async dropdown(req: any, res: Response): Promise<Response> {
+    try {
+      const { name, limit = '5' } = req.query;
+      const limitNumber = parseInt(limit as string, 10) || 5;
+
+      const clients = await this.service.getForDropdown(
+        typeof name === 'string' && name.trim() ? name : undefined,
+        limitNumber,
+      );
+
+      return res.status(200).json({
+        message: 'Clients retrieved successfully for dropdown',
+        status: 200,
+        data: clients,
+      });
+    } catch (error) {
+      console.error('Error fetching clients for dropdown:', error);
+      return res.status(500).json({
+        message: 'Internal server error',
+        status: 500,
+      });
+    }
+  }
+
   public async getById(req: any, res: Response): Promise<Response> {
     try {
       const { id } = req.params;

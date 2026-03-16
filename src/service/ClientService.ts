@@ -116,4 +116,8 @@ export class ClientService {
     }
     return this.repository.findByName(name);
   }
+
+  public async getForDropdown(name: string | undefined, limit: number | 0): Promise<Client[]> {
+    return this.repository.findForDropdown(name, limit);
+  }
 }
