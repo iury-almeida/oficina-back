@@ -147,6 +147,7 @@ export class ClientController {
       if (cpf !== undefined) updateData.cpf = cpf;
       if (address !== undefined) updateData.address = address;
       if (cep !== undefined) updateData.cep = cep;
+      if (motorcycles !== undefined) updateData.motorcycles = motorcycles;
 
       const updatedClient = await this.service.update(id, updateData);
       return res.status(200).json({
