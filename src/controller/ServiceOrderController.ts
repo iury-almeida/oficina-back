@@ -161,14 +161,10 @@ export class ServiceOrderController {
       if (serviceType !== undefined) updateData.serviceType = serviceType;
       if (status !== undefined) updateData.status = status;
       if (mechanic?.id !== undefined) updateData.mechanic = { id: mechanic.id };
-      if (budgetNumber !== undefined && budgetNumber !== null) {
-        updateData.budgetNumber = String(budgetNumber);
-      }
+      updateData.budgetNumber = budgetNumber || null;
+      updateData.laborCost = laborCost || null;
       if (pac !== undefined) updateData.pac = pac;
       if (dcm !== undefined) updateData.dcm = dcm && dcm.length > 0 ? dcm : null;
-      if (laborCost !== undefined && laborCost !== null) {
-        updateData.laborCost = Number(laborCost);
-      }
 
       const updatedServiceOrder = await this.service.update(id, updateData, photoBase64);
       return res.status(200).json({
