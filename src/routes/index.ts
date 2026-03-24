@@ -4,6 +4,7 @@ import { userRouter } from './user.routes';
 import { clientRouter } from './client.routes';
 import { mechanicRouter } from './mechanic.routes';
 import { serviceOrderRouter } from './service-order.routes';
+import { reportRouter } from './report.routes';
 
 export const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/user', userRouter);
 router.use('/client', clientRouter);
 router.use('/mechanic', mechanicRouter);
 router.use('/service-order', serviceOrderRouter);
+router.use('/report', reportRouter);
 
 // 404 for undefined routes
 router.use((req, res) => {
