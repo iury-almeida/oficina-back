@@ -43,6 +43,9 @@ export class UserRepository {
 
     const [data, total] = await this.repository.findAndCount({
       select: ['id', 'cpf', 'name', 'telephone', 'endereco', 'cep', 'adm', 'active', 'createdAt', 'updatedAt'],
+      order: {
+        createdAt: 'DESC',
+      },
       skip,
       take: limit
     });

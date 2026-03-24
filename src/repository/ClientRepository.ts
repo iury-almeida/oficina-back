@@ -21,6 +21,9 @@ export class ClientRepository {
 
     const [data, total] = await this.repository.findAndCount({
       relations: ['motorcycles'],
+      order: {
+        createdAt: 'DESC',
+      },
       skip,
       take: limit,
     });
