@@ -113,7 +113,7 @@ export class ClientRepository {
 
     return this.repository.find({
       where,
-      select: ['id', 'name', 'createdAt'],
+      select: ['id', 'name', 'createdAt', 'telephone'],
       order: { createdAt: 'DESC' },
       take: limit,
     });
