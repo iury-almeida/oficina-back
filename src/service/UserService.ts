@@ -100,4 +100,16 @@ export class UserService {
   async delete(id: string): Promise<boolean> {
     return this.repository.delete(id);
   }
+
+  async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: User[]; total: number; page: number; limit: number; totalPages: number }> {
+    if (!query || query.trim() === '') {
+      throw new Error('Search query is required');
+    }
+    const { data, total } = await this.repository.search(query.trim(), page, limit);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
 }

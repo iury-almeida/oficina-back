@@ -71,4 +71,30 @@ export class UserRepository {
     const result = await this.repository.delete(id);
     return result.affected ? result.affected > 0 : false;
   }
+
+  async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: User[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const term = `%${query}%`;
+
+    const [data, total] = await this.repository
+      .createQueryBuilder('user')
+      .select([
+        'user.id', 'user.name', 'user.cpf', 'user.telephone',
+        'user.endereco', 'user.cep', 'user.adm', 'user.active',
+        'user.createdAt', 'user.updatedAt',
+      ])
+      .where('user.name LIKE :term', { term })
+      .orWhere('user.telephone LIKE :term', { term })
+      .orWhere('user.cpf LIKE :term', { term })
+      .orderBy('user.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return { data, total };
+  }
 }

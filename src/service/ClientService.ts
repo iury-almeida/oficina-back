@@ -117,6 +117,18 @@ export class ClientService {
     return this.repository.findByName(name);
   }
 
+  public async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Client[]; total: number; page: number; limit: number; totalPages: number }> {
+    if (!query || query.trim() === '') {
+      throw new Error('Search query is required');
+    }
+    const { data, total } = await this.repository.search(query.trim(), page, limit);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   public async getForDropdown(name: string | undefined, limit: number | 0): Promise<Client[]> {
     return this.repository.findForDropdown(name, limit);
   }

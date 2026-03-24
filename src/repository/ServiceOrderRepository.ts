@@ -1,4 +1,4 @@
-import { In, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { dataSource } from '../../config/database/data-source';
 import { ServiceOrder } from '../entity/ServiceOrder';
 
@@ -33,24 +33,6 @@ export class ServiceOrderRepository {
     return { data, total };
   }
 
-  // async findPaginatedFiltered(
-  //   page: number,
-  //   limit: number,
-  //   statusFilters: string[]
-  // ): Promise<{ data: ServiceOrder[]; total: number }> {
-  //   const skip = (page - 1) * limit;
-
-  //   const [data, total] = await this.repository.findAndCount({
-  //     where: statusFilters.length > 0 ? { status: In(statusFilters) } : {},
-  //     relations: ['client', 'motorcycle', 'mechanic'],
-  //     order: { createdAt: 'ASC' },
-  //     skip,
-  //     take: limit,
-  //   });
-
-  //   return { data, total };
-  // }
-
   async findById(id: string): Promise<ServiceOrder | null> {
     return this.repository.findOne({
       where: { id },
@@ -71,5 +53,42 @@ export class ServiceOrderRepository {
   async delete(id: string): Promise<boolean> {
     const result = await this.repository.delete(id);
     return (result.affected ?? 0) > 0;
+  }
+
+  async findFiltered(
+    query: string | undefined,
+    statuses: string[],
+    page: number,
+    limit: number
+  ): Promise<{ data: ServiceOrder[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const qb = this.repository
+      .createQueryBuilder('so')
+      .leftJoinAndSelect('so.client', 'client')
+      .leftJoinAndSelect('so.motorcycle', 'motorcycle')
+      .leftJoinAndSelect('so.mechanic', 'mechanic')
+      .orderBy('so.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit);
+
+    if (query) {
+      const term = `%${query}%`;
+      qb.andWhere(
+        new Brackets((qb2) => {
+          qb2
+            .where('client.name LIKE :term', { term })
+            .orWhere('so.serviceType LIKE :term', { term })
+            .orWhere('so.pac LIKE :term', { term });
+        }),
+      );
+    }
+
+    if (statuses.length > 0) {
+      qb.andWhere('so.status IN (:...statuses)', { statuses });
+    }
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total };
   }
 }

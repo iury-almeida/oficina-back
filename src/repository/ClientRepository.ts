@@ -118,4 +118,26 @@ export class ClientRepository {
       take: limit,
     });
   }
+
+  async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Client[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const term = `%${query}%`;
+
+    const [data, total] = await this.repository
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.motorcycles', 'motorcycles')
+      .where('client.name LIKE :term', { term })
+      .orWhere('client.telephone LIKE :term', { term })
+      .orWhere('client.cpf LIKE :term', { term })
+      .orderBy('client.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return { data, total };
+  }
 }

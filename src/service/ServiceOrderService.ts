@@ -85,6 +85,24 @@ export class ServiceOrderService {
     return serviceOrder;
   }
 
+  public async filter(
+    query: string | undefined,
+    status: string | undefined,
+    page: number,
+    limit: number
+  ): Promise<{ data: ServiceOrder[]; total: number; page: number; limit: number; totalPages: number }> {
+    const statuses = status
+      ? status.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+    const { data, total } = await this.repository.findFiltered(
+      query?.trim() || undefined,
+      statuses,
+      page,
+      limit,
+    );
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   public async create(data: Partial<ServiceOrder>): Promise<ServiceOrder> {
     if (!data.client || !data.motorcycle || !data.serviceType || !data.mechanic || !data.pac || !data.laborCost) {
       throw new Error('Cliente, Moto, TipoServico, Mecanico, PAC and LaborCost are required');

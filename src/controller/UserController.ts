@@ -168,4 +168,35 @@ export class UserController {
       });
     }
   }
+
+  async search(req: Request, res: Response): Promise<void> {
+    try {
+      const { q, page = '1', limit = '10' } = req.query;
+
+      if (!q || typeof q !== 'string' || q.trim() === '') {
+        res.status(400).json({
+          message: 'Search query (q) is required',
+          status: 400,
+        });
+        return;
+      }
+
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const result = await this.service.search(q, pageNumber, limitNumber);
+      res.status(200).json({
+        message: 'Users found',
+        status: 200,
+        ...result,
+      });
+    } catch (error) {
+      console.error('Error searching users:', error);
+      res.status(500).json({
+        message: 'Internal server error',
+        status: 500,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
 }

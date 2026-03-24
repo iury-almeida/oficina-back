@@ -72,6 +72,27 @@ export class MechanicRepository {
       .getMany();
   }
 
+  async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Mechanic[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const term = `%${query}%`;
+
+    const [data, total] = await this.repository
+      .createQueryBuilder('mechanic')
+      .where('mechanic.name LIKE :term', { term })
+      .orWhere('mechanic.telephone LIKE :term', { term })
+      .orWhere('mechanic.cpf LIKE :term', { term })
+      .orderBy('mechanic.createdAt', 'DESC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return { data, total };
+  }
+
   async findByStatus(status: boolean): Promise<Mechanic[]> {
     return this.repository.find({
       where: { status },

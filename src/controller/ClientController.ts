@@ -219,20 +219,23 @@ export class ClientController {
 
   public async search(req: any, res: Response): Promise<Response> {
     try {
-      const { name } = req.query;
+      const { q, page = '1', limit = '10' } = req.query;
 
-      if (!name) {
+      if (!q || typeof q !== 'string' || q.trim() === '') {
         return res.status(400).json({
-          message: 'Name is required for search',
+          message: 'Search query (q) is required',
           status: 400,
         });
       }
 
-      const clients = await this.service.searchByName(name);
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const result = await this.service.search(q, pageNumber, limitNumber);
       return res.status(200).json({
         message: 'Clients found',
         status: 200,
-        data: clients,
+        ...result,
       });
     } catch (error) {
       console.error('Error searching clients:', error);

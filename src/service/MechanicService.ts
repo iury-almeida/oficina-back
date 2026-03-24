@@ -105,6 +105,18 @@ export class MechanicService {
     return this.repository.findByName(name);
   }
 
+  public async search(
+    query: string,
+    page: number,
+    limit: number
+  ): Promise<{ data: Mechanic[]; total: number; page: number; limit: number; totalPages: number }> {
+    if (!query || query.trim() === '') {
+      throw new Error('Search query is required');
+    }
+    const { data, total } = await this.repository.search(query.trim(), page, limit);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   public async getByStatus(status: boolean): Promise<Mechanic[]> {
     return this.repository.findByStatus(status);
   }

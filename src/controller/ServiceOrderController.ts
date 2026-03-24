@@ -90,6 +90,33 @@ export class ServiceOrderController {
     }6
   }
 
+  public async filter(req: any, res: Response): Promise<Response> {
+    try {
+      const { q, status, page = '1', limit = '10' } = req.query;
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+
+      const result = await this.service.filter(
+        typeof q === 'string' && q.trim() ? q : undefined,
+        typeof status === 'string' ? status : undefined,
+        pageNumber,
+        limitNumber,
+      );
+      return res.status(200).json({
+        message: 'Service orders retrieved successfully',
+        status: 200,
+        ...result,
+      });
+    } catch (error) {
+      console.error('Error filtering service orders:', error);
+      return res.status(500).json({
+        message: 'Internal server error',
+        status: 500,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
   public async create(req: any, res: Response): Promise<Response> {
     try {
       const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost } = req.body;
