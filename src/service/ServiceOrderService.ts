@@ -4,6 +4,8 @@ import { ClientRepository } from '../repository/ClientRepository';
 import { MotorcycleRepository } from '../../src/repository/MotorcycleRepository';
 import { MechanicRepository } from '../repository/MechanicRepository';
 import { saveBase64ToFile } from '../helpers/imgToText';
+import fs from 'fs';
+import path from 'path';
 
 export class ServiceOrderService {
   private repository: ServiceOrderRepository;
@@ -74,7 +76,7 @@ export class ServiceOrderService {
   //   };
   // }
 
-  public async getById(id: string): Promise<ServiceOrder | null> {
+  public async getById(id: string): Promise<ServiceOrder & { imageBase64?: string } | null> {
     if (!id) {
       throw new Error('Service order ID is required');
     }
@@ -82,6 +84,23 @@ export class ServiceOrderService {
     if (!serviceOrder) {
       throw new Error('Service order not found');
     }
+
+    if (serviceOrder.imagePath) {
+      try {
+        const filename = path.basename(serviceOrder.imagePath);
+        const imgPath = path.join(process.cwd(), 'img', filename);
+        if (fs.existsSync(imgPath)) {
+          const fileBuffer = fs.readFileSync(imgPath);
+          const ext = path.extname(filename).replace('.', '').toLowerCase();
+          const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
+          (serviceOrder as any).imageBase64 = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+        }
+      } catch {
+        (serviceOrder as any).imageBase64 = null;
+        // imagem não encontrada ou ilegível — retorna sem o base64
+      }
+    }
+
     return serviceOrder;
   }
 
