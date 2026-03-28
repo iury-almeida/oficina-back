@@ -170,6 +170,13 @@ export class ClientController {
         });
       }
 
+      if (error instanceof Error && error.message.includes('não pode ser removida')) {
+        return res.status(409).json({
+          message: error.message,
+          status: 409,
+        });
+      }
+
       console.error('Error updating client:', error);
       return res.status(500).json({
         message: 'Internal server error',

@@ -12,3 +12,4 @@ dist
 package-lock.json
 yarn.lock
 typescript-api-boilerplate/
+img

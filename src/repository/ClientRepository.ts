@@ -2,6 +2,7 @@ import { Like, Repository } from 'typeorm';
 import { dataSource } from '../../config/database/data-source';
 import { Client } from '../entity/Client';
 import { Motorcycle } from '../entity/Motorcycle';
+import { ServiceOrder } from '../entity/ServiceOrder';
 
 export class ClientRepository {
   private repository: Repository<Client>;
@@ -78,15 +79,52 @@ export class ClientRepository {
     // Handle motorcycles if provided
     if (motorcycles && Array.isArray(motorcycles)) {
       const motorcycleRepository = dataSource.getRepository(Motorcycle);
-      
-      // Delete existing motorcycles
-      await motorcycleRepository.delete({ client: { id } });
-      
-      // Create new motorcycles
-      if (motorcycles.length > 0) {
-        for (const m of motorcycles) {
+      const serviceOrderRepository = dataSource.getRepository(ServiceOrder);
+
+      const incomingIds = motorcycles.filter(m => m.id).map(m => m.id as string);
+      const existingMotorcycles = client.motorcycles ?? [];
+
+      // Remove motorcycles that are no longer in the payload.
+      // Throws if the motorcycle has linked service orders (FK constraint).
+      for (const existing of existingMotorcycles) {
+        if (!incomingIds.includes(existing.id)) {
+          const linkedOrders = await serviceOrderRepository.count({
+            where: { motorcycle: { id: existing.id } },
+          });
+          if (linkedOrders > 0) {
+            const name = existing.model ?? 'Desconhecida';
+            const plate = existing.licensePlate ?? 'sem placa';
+            throw new Error(
+              `A moto '${name}' - '${plate}' não pode ser removida pois está vinculada a uma ordem de serviço.`,
+            );
+          }
+          await motorcycleRepository.delete(existing.id);
+        }
+      }
+
+      // Upsert each motorcycle from the payload
+      for (const m of motorcycles) {
+        if (m.id) {
+          // Motorcycle already exists — update in-place to preserve its PK
+          const { brand, model, yearModel, color, licensePlate } = m;
+          const scalarFields: Partial<Motorcycle> = {};
+          if (brand !== undefined) scalarFields.brand = brand;
+          if (model !== undefined) scalarFields.model = model;
+          if (yearModel !== undefined) scalarFields.yearModel = yearModel;
+          if (color !== undefined) scalarFields.color = color;
+          if (licensePlate !== undefined) scalarFields.licensePlate = licensePlate;
+          if (Object.keys(scalarFields).length > 0) {
+            await motorcycleRepository.update(m.id, scalarFields);
+          }
+        } else {
+          // New motorcycle — create it
+          const { brand, model, yearModel, color, licensePlate } = m;
           const motorcycle = motorcycleRepository.create({
-            ...m,
+            brand,
+            model,
+            yearModel,
+            color,
+            licensePlate,
             client: { id } as any,
           });
           await motorcycleRepository.save(motorcycle);
