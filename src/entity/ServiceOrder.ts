@@ -38,6 +38,9 @@ export class ServiceOrder {
   @Column({ nullable: true })
   imagePath?: string;
 
+  @Column({ type: 'varchar', length: 256, nullable: true })
+  cancelReason?: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

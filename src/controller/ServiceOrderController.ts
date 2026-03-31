@@ -167,7 +167,7 @@ export class ServiceOrderController {
     try {
       const { id } = req.params;
       const photoBase64 = req.body.photoBase64 || null; 
-      const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost } = req.body;
+      const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost, cancelReason } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -183,6 +183,13 @@ export class ServiceOrderController {
         });
       }
 
+      if (status?.toLowerCase().includes('cancelado') && !cancelReason?.trim()) {
+        return res.status(400).json({
+          message: 'O motivo do cancelamento é obrigatório ao cancelar uma OS.',
+          status: 400,
+        });
+      }
+
       const updateData: any = {};
       if (client?.id !== undefined) updateData.client = { id: client.id };
       if (motorcycle?.id !== undefined) updateData.motorcycle = { id: motorcycle.id };
@@ -193,6 +200,7 @@ export class ServiceOrderController {
       updateData.laborCost = laborCost || null;
       if (pac !== undefined) updateData.pac = pac;
       if (dcm !== undefined) updateData.dcm = dcm && dcm.length > 0 ? dcm : null;
+      updateData.cancelReason = cancelReason?.trim() || null;
       updateData.userUpdateId = req.user?.id ?? null;
 
       const updatedServiceOrder = await this.service.update(id, updateData, photoBase64);
