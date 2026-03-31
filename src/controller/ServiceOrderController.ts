@@ -138,6 +138,7 @@ export class ServiceOrderController {
         pac,
         dcm: dcm && dcm.length > 0 ? dcm : null,
         laborCost: laborCost !== undefined && laborCost !== null ? Number(laborCost) : 0,
+        userCreateId: req.user?.id ?? null,
       } as Partial<any>;
 
       const newServiceOrder = await this.service.create(serviceOrderData);
@@ -192,6 +193,7 @@ export class ServiceOrderController {
       updateData.laborCost = laborCost || null;
       if (pac !== undefined) updateData.pac = pac;
       if (dcm !== undefined) updateData.dcm = dcm && dcm.length > 0 ? dcm : null;
+      updateData.userUpdateId = req.user?.id ?? null;
 
       const updatedServiceOrder = await this.service.update(id, updateData, photoBase64);
       return res.status(200).json({

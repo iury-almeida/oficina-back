@@ -1,11 +1,14 @@
 import { Mechanic } from '../entity/Mechanic';
 import { MechanicRepository } from '../repository/MechanicRepository';
+import { UserRepository } from '../repository/UserRepository';
 
 export class MechanicService {
   private repository: MechanicRepository;
+  private userRepository: UserRepository;
 
   constructor() {
     this.repository = new MechanicRepository();
+    this.userRepository = new UserRepository();
   }
 
   public async getAll(page: number, limit: number): Promise<{
@@ -26,7 +29,7 @@ export class MechanicService {
     };
   }
 
-  public async getById(id: string): Promise<Mechanic | null> {
+  public async getById(id: string): Promise<any> {
     if (!id) {
       throw new Error('Mechanic ID is required');
     }
@@ -34,7 +37,16 @@ export class MechanicService {
     if (!mechanic) {
       throw new Error('Mechanic not found');
     }
-    return mechanic;
+    const result: any = { ...mechanic };
+    if (mechanic.userCreateId) {
+      const creator = await this.userRepository.findById(mechanic.userCreateId);
+      result.userCreateName = creator?.name ?? null;
+    }
+    if (mechanic.userUpdateId) {
+      const updater = await this.userRepository.findById(mechanic.userUpdateId);
+      result.userUpdateName = updater?.name ?? null;
+    }
+    return result;
   }
 
   public async getByCpf(cpf: string): Promise<Mechanic | null> {

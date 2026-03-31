@@ -3,6 +3,7 @@ import { ServiceOrderRepository } from '../repository/ServiceOrderRepository';
 import { ClientRepository } from '../repository/ClientRepository';
 import { MotorcycleRepository } from '../../src/repository/MotorcycleRepository';
 import { MechanicRepository } from '../repository/MechanicRepository';
+import { UserRepository } from '../repository/UserRepository';
 import { saveBase64ToFile } from '../helpers/imgToText';
 import fs from 'fs';
 import path from 'path';
@@ -12,12 +13,14 @@ export class ServiceOrderService {
   private clientRepository: ClientRepository;
   private motorcycleRepository: MotorcycleRepository;
   private mechanicRepository: MechanicRepository;
+  private userRepository: UserRepository;
 
   constructor() {
     this.repository = new ServiceOrderRepository();
     this.clientRepository = new ClientRepository();
     this.motorcycleRepository = new MotorcycleRepository();
     this.mechanicRepository = new MechanicRepository();
+    this.userRepository = new UserRepository();
   }
 
   public async getAll(page: number, limit: number): Promise<{
@@ -76,7 +79,7 @@ export class ServiceOrderService {
   //   };
   // }
 
-  public async getById(id: string): Promise<ServiceOrder & { imageBase64?: string } | null> {
+  public async getById(id: string): Promise<any> {
     if (!id) {
       throw new Error('Service order ID is required');
     }
@@ -84,6 +87,8 @@ export class ServiceOrderService {
     if (!serviceOrder) {
       throw new Error('Service order not found');
     }
+
+    const result: any = { ...serviceOrder };
 
     if (serviceOrder.imagePath) {
       try {
@@ -93,15 +98,23 @@ export class ServiceOrderService {
           const fileBuffer = fs.readFileSync(imgPath);
           const ext = path.extname(filename).replace('.', '').toLowerCase();
           const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
-          (serviceOrder as any).imageBase64 = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+          result.imageBase64 = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
         }
       } catch {
-        (serviceOrder as any).imageBase64 = null;
-        // imagem não encontrada ou ilegível — retorna sem o base64
+        result.imageBase64 = null;
       }
     }
 
-    return serviceOrder;
+    if (serviceOrder.userCreateId) {
+      const creator = await this.userRepository.findById(serviceOrder.userCreateId);
+      result.userCreateName = creator?.name ?? null;
+    }
+    if (serviceOrder.userUpdateId) {
+      const updater = await this.userRepository.findById(serviceOrder.userUpdateId);
+      result.userUpdateName = updater?.name ?? null;
+    }
+
+    return result;
   }
 
   public async filter(

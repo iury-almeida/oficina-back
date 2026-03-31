@@ -79,6 +79,7 @@ export class MechanicController {
         cpf: cpf || null,
         address: address || null,
         status: status !== undefined ? status : true,
+        userCreateId: req.user?.id ?? null,
       };
 
       const newMechanic = await this.service.create(mechanicData);
@@ -121,6 +122,7 @@ export class MechanicController {
       if (cpf !== undefined) updateData.cpf = cpf;
       if (address !== undefined) updateData.address = address;
       if (status !== undefined) updateData.status = status;
+      updateData.userUpdateId = req.user?.id ?? null;
 
       const updatedMechanic = await this.service.update(id, updateData);
       return res.status(200).json({

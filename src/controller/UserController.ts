@@ -106,7 +106,8 @@ export class UserController {
         endereco,
         cep,
         active,
-        adm
+        adm,
+        userCreateId: (req as any).user?.id ?? null,
       });
 
       res.status(201).json({
@@ -130,6 +131,7 @@ export class UserController {
       if (password) {
         data.passwordHash = password;
       }
+      data.userUpdateId = (req as any).user?.id ?? null;
 
       const user = await this.service.update(id, data);
 

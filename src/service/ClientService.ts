@@ -1,12 +1,15 @@
 import { Client } from '../entity/Client';
 import { ClientRepository } from '../repository/ClientRepository';
+import { UserRepository } from '../repository/UserRepository';
 import { normalizeDocument, isValidDocumentLength } from '../helpers/documentUtils';
 
 export class ClientService {
   private repository: ClientRepository;
+  private userRepository: UserRepository;
 
   constructor() {
     this.repository = new ClientRepository();
+    this.userRepository = new UserRepository();
   }
 
   public async getAll(page: number, limit: number): Promise<{
@@ -27,7 +30,7 @@ export class ClientService {
     };
   }
 
-  public async getById(id: string): Promise<Client | null> {
+  public async getById(id: string): Promise<any> {
     if (!id) {
       throw new Error('Client ID is required');
     }
@@ -35,7 +38,16 @@ export class ClientService {
     if (!client) {
       throw new Error('Client not found');
     }
-    return client;
+    const result: any = { ...client };
+    if (client.userCreateId) {
+      const creator = await this.userRepository.findById(client.userCreateId);
+      result.userCreateName = creator?.name ?? null;
+    }
+    if (client.userUpdateId) {
+      const updater = await this.userRepository.findById(client.userUpdateId);
+      result.userUpdateName = updater?.name ?? null;
+    }
+    return result;
   }
 
   public async getBycpf(cpf: string): Promise<Client | null> {

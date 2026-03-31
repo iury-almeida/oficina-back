@@ -43,4 +43,10 @@ export class ServiceOrder {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @Column({ type: 'varchar', nullable: true })
+  userCreateId?: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  userUpdateId?: string | null;
 }

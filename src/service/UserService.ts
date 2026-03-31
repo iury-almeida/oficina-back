@@ -75,8 +75,19 @@ export class UserService {
     };
   }
 
-  async getById(id: string): Promise<User | null> {
-    return this.repository.findById(id);
+  async getById(id: string): Promise<any> {
+    const user = await this.repository.findById(id);
+    if (!user) return null;
+    const result: any = { ...user };
+    if (user.userCreateId) {
+      const creator = await this.repository.findById(user.userCreateId);
+      result.userCreateName = creator?.name ?? null;
+    }
+    if (user.userUpdateId) {
+      const updater = await this.repository.findById(user.userUpdateId);
+      result.userUpdateName = updater?.name ?? null;
+    }
+    return result;
   }
 
   async create(data: Partial<User>): Promise<User> {

@@ -56,7 +56,7 @@ export class UserRepository {
   async findById(id: string): Promise<User | null> {
     return this.repository.findOne({
       where: { id },
-      select: ['id', 'cpf', 'name', 'telephone', 'endereco', 'cep', 'adm', 'active', 'createdAt', 'updatedAt']
+      select: ['id', 'cpf', 'name', 'telephone', 'endereco', 'cep', 'adm', 'active', 'createdAt', 'updatedAt', 'userCreateId', 'userUpdateId']
     });
   }
 

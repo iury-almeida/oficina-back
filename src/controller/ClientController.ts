@@ -104,6 +104,7 @@ export class ClientController {
         address: address || null,
         cep: cep || null,
         motorcycles: motorcycles || [],
+        userCreateId: req.user?.id ?? null,
       };
 
       const newClient = await this.service.create(clientData);
@@ -148,6 +149,7 @@ export class ClientController {
       if (address !== undefined) updateData.address = address;
       if (cep !== undefined) updateData.cep = cep;
       if (motorcycles !== undefined) updateData.motorcycles = motorcycles;
+      updateData.userUpdateId = req.user?.id ?? null;
 
       const updatedClient = await this.service.update(id, updateData);
       return res.status(200).json({
