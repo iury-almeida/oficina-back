@@ -4,6 +4,7 @@ import { ClientRepository } from '../repository/ClientRepository';
 import { MotorcycleRepository } from '../../src/repository/MotorcycleRepository';
 import { MechanicRepository } from '../repository/MechanicRepository';
 import { UserRepository } from '../repository/UserRepository';
+import { NotificationRepository } from '../repository/NotificationRepository';
 import { saveBase64ToFile } from '../helpers/imgToText';
 import fs from 'fs';
 import path from 'path';
@@ -14,6 +15,7 @@ export class ServiceOrderService {
   private motorcycleRepository: MotorcycleRepository;
   private mechanicRepository: MechanicRepository;
   private userRepository: UserRepository;
+  private notificationRepository: NotificationRepository;
 
   constructor() {
     this.repository = new ServiceOrderRepository();
@@ -21,6 +23,7 @@ export class ServiceOrderService {
     this.motorcycleRepository = new MotorcycleRepository();
     this.mechanicRepository = new MechanicRepository();
     this.userRepository = new UserRepository();
+    this.notificationRepository = new NotificationRepository();
   }
 
   public async getAll(page: number, limit: number): Promise<{
@@ -113,6 +116,8 @@ export class ServiceOrderService {
       const updater = await this.userRepository.findById(serviceOrder.userUpdateId);
       result.userUpdateName = updater?.name ?? null;
     }
+
+    result.hasNotification = await this.notificationRepository.existsByServiceOrderId(serviceOrder.id);
 
     return result;
   }

@@ -52,4 +52,7 @@ export class ServiceOrder {
 
   @Column({ type: 'varchar', nullable: true })
   userUpdateId?: string | null;
+
+  @Column({ type: 'boolean', default: false, nullable: false })
+  hasNotification!: boolean;
 }
