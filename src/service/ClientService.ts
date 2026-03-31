@@ -55,20 +55,26 @@ export class ClientService {
       throw new Error('Name and telephone are required');
     }
 
-    const rawDoc = data.cpf ?? null;
-    let document: string = '';
-    if (rawDoc && String(rawDoc).trim()) {
-      if (!isValidDocumentLength(rawDoc)) {
-        throw new Error('CPF/CNPJ inválido. Use 11 dígitos (CPF) ou 14 dígitos (CNPJ)');
+    if (data.cpf) {
+      const rawDoc = data.cpf ?? null;
+      let document: string = '';
+      if (rawDoc && String(rawDoc).trim()) {
+        if (!isValidDocumentLength(rawDoc)) {
+          throw new Error('CPF/CNPJ inválido. Use 11 dígitos (CPF) ou 14 dígitos (CNPJ)');
+        }
+        document = normalizeDocument(rawDoc);
+        const existingClient = await this.repository.findByCpf(document);
+        if (existingClient) {
+          throw new Error('Já existe cliente cadastrado com este CPF/CNPJ');
+        }
       }
-      document = normalizeDocument(rawDoc);
-      const existingClient = await this.repository.findByCpf(document);
-      if (existingClient) {
-        throw new Error('Já existe cliente cadastrado com este CPF/CNPJ');
-      }
-    }
 
-    return this.repository.create({ ...data, cpf: document });
+      return this.repository.create({ ...data, cpf: document });
+    }
+    else 
+      return this.repository.create({ ...data, cpf: null });
+
+
   }
 
   public async update(id: string, data: Partial<Client>): Promise<Client | null> {
@@ -81,17 +87,22 @@ export class ClientService {
       throw new Error('Client not found');
     }
 
-    // Check if CPF/CNPJ is being updated and already exists in another client
-    if (data.cpf && data.cpf !== existingClient.cpf) {
-      if (!isValidDocumentLength(data.cpf)) {
-        throw new Error('CPF/CNPJ inválido. Use 11 dígitos (CPF) ou 14 dígitos (CNPJ)');
+    // Check if CPF/CNPJ is being updated
+    if ('cpf' in data) {
+      if (!data.cpf || !String(data.cpf).trim()) {
+        // CPF removido pelo usuário — limpar o campo
+        data = { ...data, cpf: null };
+      } else if (data.cpf !== existingClient.cpf) {
+        if (!isValidDocumentLength(data.cpf)) {
+          throw new Error('CPF/CNPJ inválido. Use 11 dígitos (CPF) ou 14 dígitos (CNPJ)');
+        }
+        const normalizedDoc = normalizeDocument(data.cpf);
+        const clientWithDoc = await this.repository.findByCpf(normalizedDoc);
+        if (clientWithDoc && clientWithDoc.id !== id) {
+          throw new Error('Já existe cliente cadastrado com este CPF/CNPJ');
+        }
+        data = { ...data, cpf: normalizedDoc };
       }
-      const normalizedDoc = normalizeDocument(data.cpf);
-      const clientWithDoc = await this.repository.findByCpf(normalizedDoc);
-      if (clientWithDoc && clientWithDoc.id !== id) {
-        throw new Error('Já existe cliente cadastrado com este CPF/CNPJ');
-      }
-      data = { ...data, cpf: normalizedDoc };
     }
 
     return this.repository.updateWithMotorcycles(id, data);

@@ -144,7 +144,7 @@ export class ClientController {
       const updateData: any = {};
       if (name !== undefined) updateData.name = name;
       if (telephone !== undefined) updateData.telephone = telephone;
-      if (cpf !== undefined) updateData.cpf = cpf;
+      updateData.cpf = (cpf && String(cpf).trim()) ? cpf : null;
       if (address !== undefined) updateData.address = address;
       if (cep !== undefined) updateData.cep = cep;
       if (motorcycles !== undefined) updateData.motorcycles = motorcycles;
@@ -163,7 +163,7 @@ export class ClientController {
         });
       }
 
-      if (error instanceof Error && error.message.includes('already exists')) {
+      if (error instanceof Error && (error.message.includes('already exists') || error.message.includes('Já existe'))) {
         return res.status(409).json({
           message: error.message,
           status: 409,

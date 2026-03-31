@@ -69,11 +69,12 @@ export class ClientRepository {
       return null;
     }
 
-    // Update scalar fields
+    // Update scalar fields — use save() so null values (e.g. cpf: null) are persisted
     const { motorcycles, ...scalarData } = data;
-    
+
     if (Object.keys(scalarData).length > 0) {
-      await this.repository.update(id, scalarData);
+      Object.assign(client, scalarData);
+      await this.repository.save(client);
     }
 
     // Handle motorcycles if provided

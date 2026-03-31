@@ -13,8 +13,8 @@ export class Client {
   telephone!: string;
 
   /** CPF (11 dígitos) ou CNPJ (14 dígitos). Armazenado sem pontuação. */
-  @Column({ name: 'cpf', nullable: true, unique: true })
-  cpf?: string;
+  @Column({ name: 'cpf', type: 'varchar', nullable: true, unique: true })
+  cpf?: string | null;
 
   @Column({ nullable: true })
   address?: string;
