@@ -10,7 +10,7 @@ export class ReportController {
 
   public async getCompletedServiceOrders(req: Request, res: Response): Promise<Response> {
     try {
-      const { startDate, endDate, status = 'Concluído', limit } = req.query;
+      const { startDate, endDate, status = 'Concluído', limit, dateFilterType = 'createdAt' } = req.query;
 
       if (!startDate || !endDate) {
         return res.status(400).json({
@@ -20,12 +20,14 @@ export class ReportController {
       }
 
       const limitNumber = parseInt(limit as string, 10);
+      const filterType = (dateFilterType as string) === 'updatedAt' ? 'updatedAt' : 'createdAt';
 
       const result = await this.service.getCompletedServiceOrders(
         startDate as string,
         endDate as string,
         status as string,
         limitNumber,
+        filterType,
       );
 
       return res.status(200).json({

@@ -39,16 +39,19 @@ export class ReportRepository {
     endDate: Date,
     statuses: string[],
     limit: number,
+    dateFilterType: 'createdAt' | 'updatedAt' = 'createdAt',
   ): Promise<ReportResult> {
+    const dateField = dateFilterType === 'updatedAt' ? 'so.updatedAt' : 'so.createdAt';
+
     const qb = this.repository
       .createQueryBuilder('so')
       .leftJoinAndSelect('so.client', 'client')
       .leftJoinAndSelect('so.motorcycle', 'motorcycle')
       .leftJoinAndSelect('so.mechanic', 'mechanic')
-      .where('DATE(so.createdAt) >= DATE(:startDate)', { startDate })
-      .andWhere('DATE(so.createdAt) <= DATE(:endDate)', { endDate })
+      .where(`DATE(${dateField}) >= DATE(:startDate)`, { startDate })
+      .andWhere(`DATE(${dateField}) <= DATE(:endDate)`, { endDate })
       .andWhere('so.status IN (:...statuses)', { statuses })
-      .orderBy('so.createdAt', 'DESC')
+      .orderBy(dateField, 'DESC')
       .take(limit);
 
     const data = await qb.getMany();
@@ -65,6 +68,7 @@ export class ReportRepository {
       mechanicName: so.mechanic?.name ?? '',
       laborCost: Number(so.laborCost ?? 0),
       createdAt: formatLocalDate(so.createdAt),
+      updatedAt: formatLocalDate(so.updatedAt),
     }));
 
     return { data: rows, totalOS: rows.length, totalLaborCost };

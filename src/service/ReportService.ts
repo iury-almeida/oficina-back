@@ -12,6 +12,7 @@ export class ReportService {
     endDate: string,
     status: string,
     limit: number,
+    dateFilterType: 'createdAt' | 'updatedAt' = 'createdAt',
   ): Promise<ReportResult> {
     // Parseando como horário local (evita interpretação UTC de 'YYYY-MM-DD')
     const [sy, sm, sd] = startDate.split('-').map(Number);
@@ -32,6 +33,6 @@ export class ReportService {
       .map((s) => s.trim())
       .filter(Boolean);
 
-    return this.repository.findCompletedByPeriod(start, end, statuses, limit);
+    return this.repository.findCompletedByPeriod(start, end, statuses, limit, dateFilterType);
   }
 }
