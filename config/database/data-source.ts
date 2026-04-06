@@ -12,7 +12,7 @@ export const dataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || 'database_name',
-  timezone: 'local',
+  timezone: 'America/Sao_Paulo',
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
   entities: [path.join(__dirname, "../../src/entity/**/*.{js,ts}")],
