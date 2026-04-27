@@ -87,7 +87,7 @@ export class ServiceOrderController {
         message: 'Internal server error',
         status: 500,
       });
-    }6
+    }
   }
 
   public async filter(req: any, res: Response): Promise<Response> {
@@ -119,7 +119,7 @@ export class ServiceOrderController {
 
   public async create(req: any, res: Response): Promise<Response> {
     try {
-      const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost } = req.body;
+      const { client, motorcycle, serviceType, status, mechanic, pac, dcm, laborCost } = req.body;
 
       if (!client?.id || !motorcycle?.id || !serviceType || !mechanic?.id || !pac || !laborCost) {
         return res.status(400).json({
@@ -134,7 +134,6 @@ export class ServiceOrderController {
         serviceType: serviceType,
         status: status || 'Aguardando:Vermelho',
         mechanic: { id: mechanic.id },
-        budgetNumber: budgetNumber !== undefined && budgetNumber !== null ? String(budgetNumber) : null,
         pac,
         dcm: dcm && dcm.length > 0 ? dcm : null,
         laborCost: laborCost !== undefined && laborCost !== null ? Number(laborCost) : 0,
@@ -166,19 +165,11 @@ export class ServiceOrderController {
   public async update(req: any, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const photoBase64 = req.body.photoBase64 || null; 
-      const { client, motorcycle, serviceType, status, mechanic, budgetNumber, pac, dcm, laborCost, cancelReason } = req.body;
+      const { client, motorcycle, serviceType, status, mechanic, pac, dcm, laborCost, cancelReason } = req.body;
 
       if (!id) {
         return res.status(400).json({
           message: 'Service order ID is required',
-          status: 400,
-        });
-      }
-
-      if (status === 'Concluído' && (photoBase64 === undefined || photoBase64 === null)) {
-        return res.status(400).json({
-          message: 'Photo is required when status is Concluído',
           status: 400,
         });
       }
@@ -196,14 +187,13 @@ export class ServiceOrderController {
       if (serviceType !== undefined) updateData.serviceType = serviceType;
       if (status !== undefined) updateData.status = status;
       if (mechanic?.id !== undefined) updateData.mechanic = { id: mechanic.id };
-      updateData.budgetNumber = budgetNumber || null;
       updateData.laborCost = laborCost || null;
       if (pac !== undefined) updateData.pac = pac;
       if (dcm !== undefined) updateData.dcm = dcm && dcm.length > 0 ? dcm : null;
       updateData.cancelReason = cancelReason?.trim() || null;
       updateData.userUpdateId = req.user?.id ?? null;
 
-      const updatedServiceOrder = await this.service.update(id, updateData, photoBase64);
+      const updatedServiceOrder = await this.service.update(id, updateData);
       return res.status(200).json({
         message: 'Service order updated successfully',
         status: 200,

@@ -5,9 +5,6 @@ import { MotorcycleRepository } from '../../src/repository/MotorcycleRepository'
 import { MechanicRepository } from '../repository/MechanicRepository';
 import { UserRepository } from '../repository/UserRepository';
 import { NotificationRepository } from '../repository/NotificationRepository';
-import { saveBase64ToFile } from '../helpers/imgToText';
-import fs from 'fs';
-import path from 'path';
 
 export class ServiceOrderService {
   private repository: ServiceOrderRepository;
@@ -93,21 +90,6 @@ export class ServiceOrderService {
 
     const result: any = { ...serviceOrder };
 
-    if (serviceOrder.imagePath) {
-      try {
-        const filename = path.basename(serviceOrder.imagePath);
-        const imgPath = path.join(process.cwd(), 'img', filename);
-        if (fs.existsSync(imgPath)) {
-          const fileBuffer = fs.readFileSync(imgPath);
-          const ext = path.extname(filename).replace('.', '').toLowerCase();
-          const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
-          result.imageBase64 = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
-        }
-      } catch {
-        result.imageBase64 = null;
-      }
-    }
-
     if (serviceOrder.userCreateId) {
       const creator = await this.userRepository.findById(serviceOrder.userCreateId);
       result.userCreateName = creator?.name ?? null;
@@ -169,7 +151,7 @@ export class ServiceOrderService {
     return this.repository.create(serviceOrderData);
   }
 
-  public async update(id: string, data: Partial<ServiceOrder>, photoBase64: string | null): Promise<ServiceOrder | null> {
+  public async update(id: string, data: Partial<ServiceOrder>): Promise<ServiceOrder | null> {
     if (!id) {
       throw new Error('Service order ID is required');
     }
@@ -199,11 +181,6 @@ export class ServiceOrderService {
       if (!mechanic) {
         throw new Error('Mechanic not found');
       }
-    }
-
-    if (photoBase64) {
-      const imagePath = await saveBase64ToFile(photoBase64 || '', process.env.RECIBO_IMG_PATH);
-      data.imagePath = imagePath;
     }
 
     return this.repository.update(id, data);

@@ -23,9 +23,6 @@ export class ServiceOrder {
   @ManyToOne(() => Mechanic, { nullable: false, eager: true })
   mechanic!: Mechanic;
 
-  @Column({ nullable: true })
-  budgetNumber?: string;
-
   @Column({ nullable: false })
   pac!: string;
 
@@ -34,9 +31,6 @@ export class ServiceOrder {
 
   @Column({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
   laborCost?: number;
-
-  @Column({ nullable: true })
-  imagePath?: string;
 
   @Column({ type: 'varchar', length: 256, nullable: true })
   cancelReason?: string | null;

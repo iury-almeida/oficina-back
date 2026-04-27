@@ -10,7 +10,6 @@ function formatLocalDate(date: Date): string {
 }
 
 export interface ReportRow {
-  budgetNumber: string | null;
   clientName: string;
   motorcycleBrand: string;
   motorcycleModel: string;
@@ -59,7 +58,6 @@ export class ReportRepository {
     const totalLaborCost = data.reduce((sum, so) => sum + Number(so.laborCost ?? 0), 0);
 
     const rows: ReportRow[] = data.map((so) => ({
-      budgetNumber: so.budgetNumber ?? null,
       clientName: so.client?.name ?? '',
       motorcycleBrand: so.motorcycle?.brand ?? '',
       motorcycleModel: so.motorcycle?.model ?? '',
