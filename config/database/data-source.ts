@@ -14,15 +14,9 @@ export const dataSource = new DataSource({
   database: process.env.DB_NAME || 'database_name',
   timezone: 'America/Sao_Paulo',
   synchronize: false,
+  migrationsRun: true,
   logging: process.env.NODE_ENV === 'development',
   entities: [path.join(__dirname, "../../src/entity/**/*.{js,ts}")],
-  migrations: ['src/migration/**/*.ts'],
-  subscribers: ['src/subscriber/**/*.ts'],
-});
-
-dataSource.initialize().then(() => {
-  console.log('✅ Database connected successfully');
-}).catch((error) => {
-  console.error('❌ Error during Data Source initialization', error);
-  process.exit(1);
+  migrations: [path.join(__dirname, '../../src/migration/**/*.{js,ts}')],
+  subscribers: [path.join(__dirname, '../../src/subscriber/**/*.{js,ts}')],
 });
