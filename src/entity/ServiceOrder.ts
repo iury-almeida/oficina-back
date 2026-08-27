@@ -14,7 +14,7 @@ export class ServiceOrder {
   @ManyToOne(() => Motorcycle, { nullable: false, eager: true })
   motorcycle!: Motorcycle;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', length: 3000, nullable: false })
   serviceType!: string;
 
   @Column({ nullable: false, default: 'Aguardando:Vermelho' })
@@ -26,10 +26,10 @@ export class ServiceOrder {
   @Column({ nullable: true })
   budgetNumber?: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', length: 3000, nullable: false })
   pac!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 3000, nullable: true })
   dcm?: string;
 
   @Column({ nullable: false, type: 'decimal', precision: 10, scale: 2 })
@@ -38,7 +38,7 @@ export class ServiceOrder {
   @Column({ nullable: true })
   imagePath?: string;
 
-  @Column({ type: 'varchar', length: 256, nullable: true })
+  @Column({ type: 'varchar', length: 3000, nullable: true })
   cancelReason?: string | null;
 
   @CreateDateColumn()

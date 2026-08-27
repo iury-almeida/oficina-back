@@ -8,7 +8,11 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules config/Server/server.ts",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d config/database/data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run -d config/database/data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d config/database/data-source.ts"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +41,7 @@
     "eslint": "^9.13.0",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2"
   }
